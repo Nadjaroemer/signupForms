@@ -1,8 +1,15 @@
 import { useRef } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import { render } from "@testing-library/react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
+
+const schema = yup.object({
+  fornavn: yup.string().required(),
+  efternavn: yup.string().required(),
+  email: yup.string().email(),
+}).required();
 
 function App() {
   const {
@@ -10,7 +17,9 @@ function App() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    resolver: yupResolver(schema)
+  });
 
   const email = useRef({});
   email.current = watch("email", "");
@@ -26,15 +35,9 @@ function App() {
           onSubmit={handleSubmit(validation)}
           className="flex justify-center flex-col items-center"
         >
-          {errors.fornavn && <p>{errors.fornavn.message}</p>}
+          {errors.fornavn && <p>{errors.fornavn?.message}</p>}
           <input
-            {...register("fornavn", {
-              required: "field is required",
-              minLength: {
-                value: 2,
-                message: "A minimum of two characters are required",
-              },
-            })}
+            {...register("fornavn")}
             type="text"
             placeholder="Fornavn"
             className="mt-2
