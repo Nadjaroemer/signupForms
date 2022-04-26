@@ -6,9 +6,25 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 
 const schema = yup.object({
-  fornavn: yup.string().required(),
-  efternavn: yup.string().required(),
-  email: yup.string().email(),
+  fornavn: yup
+  .string()
+  .required("Your name is required")
+  .min(2, "Our programmers have determined that your name must contain more than to letters")
+  .matches(/^[a-zzZ-À-ÿ -]+$/, "The name you entered has to contain letters only"),
+  efternavn: yup
+  .string()
+  .required("Your name is required")
+  .matches(/^[aA-zZÀ-ÿ]+$/, "The name you entered has to contain letters")
+  .min(2, "Your name must contain more than to letters"),
+  email: yup
+  .string()
+  .email()
+  .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "The email you entered is not a valid email adress. Enter in the format name@example.com")
+  .required("Your name is required"),
+  bekraeftemail: yup
+  .string()
+  .oneOf([yup.ref("email")], "The email you entered does not match your email adress above")
+  .required("You have to confirm your email adress")
 }).required();
 
 function App() {
@@ -63,7 +79,7 @@ function App() {
           />
           {errors.email && <p>{errors.email.message}</p>}
           <input
-            {...register("email", { required: "field is required" })}
+            {...register("email", { required: "This field requires an email adress" })}
             type="text"
             placeholder="Email"
             className="mt-2
@@ -78,9 +94,9 @@ function App() {
           {errors.bekraeftemail && <p>{errors.bekraeftemail.message}</p>}
           <input
             {...register("bekraeftemail", {
-              required: "field is required",
+              required: "This field requires an email adress",
               validate: (value) =>
-                value === email.current || "Emails do not match",
+                value === email.current || "Your Emails do not match",
             })}
             type="text"
             placeholder="Bekræft email"
@@ -93,18 +109,20 @@ function App() {
                     focus:border-gray-500 focus:bg-white focus:ring-0
 "
           />
-          <input
-            type="password"
-            placeholder="Kodeord"
-            className="mt-2
-                    block
-                    w-full
-                    rounded-md
-                    bg-gray-100
-                    border-transparent
-                    focus:border-gray-500 focus:bg-white focus:ring-0
-"
-          />
+          <div class="flex">
+            <input
+              type="password"
+              placeholder="Kodeord"
+              className="mt-2
+                      block
+                      w-full
+                      rounded-md
+                      bg-gray-100
+                      border-transparent
+                      focus:border-gray-500 focus:bg-white focus:ring-0"
+                     
+            />
+          </div>
           <input
             type="submit"
             value="Videre"
